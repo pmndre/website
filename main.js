@@ -362,7 +362,7 @@ function reach(zone) {
 	ascent.classList.toggle("lit", zone >= 8);
 	if (zone <= 0) say("", "Scroll to rise", "Seven spheres above");
 	else if (zone <= 7) say(`Zone ${ROMAN[zone - 1]} of VII · given back · ${NAMES[zone - 1 + 7]}`, SPHERES[zone - 1], `Zone ${ROMAN[zone - 1]}`);
-	else say("as they had been unfolded to him", "the secrets of the invisible", "The Eighth");
+	else say("", "", "The Eighth");
 }
 
 function say(sub, name, zone) {
