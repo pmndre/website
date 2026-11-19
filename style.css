@@ -417,8 +417,7 @@ body.rising > .panel { transition: transform 1.1s var(--ease) var(--delay, 0s), 
 
 .end { padding-top: var(--p); }
 .ends { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--g); align-items: end; }
-.logo { grid-column: 1 / span 2; width: 100%; max-width: 132px; aspect-ratio: 1; }
-.who { grid-column: 3 / span 6; display: grid; gap: 10px; }
+.who { grid-column: 1 / span 8; display: grid; gap: 10px; }
 .wordmark { font-weight: 900; font-stretch: 125%; font-size: clamp(44px, 7.4vw, 130px); line-height: 0.78; letter-spacing: -0.04em; }
 .links { grid-column: 9 / -1; display: grid; gap: 10px; justify-items: end; }
 .ticker { margin: var(--p) calc(var(--p) * -1) 0; border-top: 1px solid var(--line); overflow: hidden; color: var(--dim); }
@@ -426,8 +425,7 @@ body.rising > .panel { transition: transform 1.1s var(--ease) var(--delay, 0s), 
 .ticker span { padding: 14px 0; white-space: pre; }
 @keyframes tick { to { transform: translateX(-50%); } }
 @media (max-width: 639px) {
-	.logo { grid-column: 1 / span 3; }
-	.who { grid-column: 4 / -1; }
+	.who { grid-column: 1 / -1; }
 	.links { grid-column: 1 / -1; justify-items: start; }
 }
 

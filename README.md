@@ -21,4 +21,4 @@ To look at it locally:
 python3 -m http.server 5310 --bind 127.0.0.1
 ```
 
-The page names its stylesheet and scripts with a version (`?v=7` in `index.html`, and on the import of `sound.js` in `main.js`): pmnd.re lets browsers keep them for four hours, so raise it with every change to them.
+The page names its stylesheet and scripts with a version (`?v=8` in `index.html`, and on the import of `sound.js` in `main.js`): pmnd.re lets browsers keep them for four hours, so raise it with every change to them.
