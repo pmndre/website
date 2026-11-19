@@ -1,7 +1,7 @@
 // What moves on the page. Nothing here is needed to read it: without this file (or with reduced
 // motion asked for) the name reads PMNDRE, the P stands whole and the text is plain.
 
-import { wake, tone, awake, isMuted, setMuted, light as dawn, silence, crash, NAMES } from "./sound.js?v=6";
+import { wake, tone, awake, isMuted, setMuted, light as dawn, silence, crash, NAMES } from "./sound.js?v=7";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (s, r = document) => r.querySelector(s);
@@ -74,13 +74,12 @@ const mark = $(".mark");
 const rings = $(".rings");
 const ghost = $(".ghost");
 const PIECES = [
-	{ el: $(".piece.d"), dx: 0.16, dy: -0.14, rot: 3, depth: 10 },
-	{ el: $(".piece.b"), dx: 0.03, dy: 0.12, rot: -9, depth: 22 },
-	{ el: $(".piece.c"), dx: -0.24, dy: 0.05, rot: -14, depth: 30 },
-	{ el: $(".piece.a"), dx: 0.07, dy: 0.3, rot: 11, depth: 16 },
+	{ el: $(".piece.d"), dx: 0.16, dy: -0.14, rot: 3, depth: 0.8 },
+	{ el: $(".piece.b"), dx: 0.03, dy: 0.12, rot: -9, depth: 1.6 },
+	{ el: $(".piece.c"), dx: -0.24, dy: 0.05, rot: -14, depth: 2.2 },
+	{ el: $(".piece.a"), dx: 0.07, dy: 0.3, rot: 11, depth: 1.2 },
 ];
 const fill = $(".hatch .fill");
-const light = $(".light");
 
 // ---------------------------------------------------------------- the vision
 // Every word of the text is veiled by signs. It is seen near the eye (the pointer's lens) and on
@@ -564,9 +563,6 @@ function frame(now) {
 	name.style.transform = `translate3d(${(-hp * hero.clientWidth * 0.1).toFixed(1)}px, 0, 0)`;
 	const total = document.documentElement.scrollHeight - vh;
 	fill.style.setProperty("--v", Math.max(0.04, total > 0 ? sy / total : 0).toFixed(4));
-	const hr = hero.getBoundingClientRect();
-	light.style.setProperty("--lx", `${pointer.x - hr.left}px`);
-	light.style.setProperty("--ly", `${pointer.y - hr.top}px`);
 
 	driftWorks(vh);
 
