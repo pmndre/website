@@ -3,22 +3,124 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pmnd.re</title>
-<style>
-	:root { color-scheme: light dark; --bg: #f3f4f1; --text: #1a1d1b; --muted: #666e68; --brand: #1f7a55; }
-	@media (prefers-color-scheme: dark) { :root { --bg: #1b1e28; --text: #e4f0fb; --muted: #a6accd; --brand: #5de4c7; } }
-	html, body { height: 100%; margin: 0; }
-	body { display: grid; place-items: center; background: var(--bg); color: var(--text); font: 18px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
-	main { text-align: center; padding: 24px; }
-	h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: -0.02em; }
-	p { margin: 0; color: var(--muted); }
-	a { color: var(--brand); }
-</style>
+<title>PMNDRE — Poimandre</title>
+<meta name="description" content="Poimandre. An open source developer collective.">
+<meta name="theme-color" content="#c4c4c1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+<script type="module" src="/main.js"></script>
 </head>
 <body>
-<main>
-	<h1>Hello, world.</h1>
-	<p>This is where pmnd.re will be. Meanwhile: <a href="https://pine.pmnd.re">pine.pmnd.re</a></p>
-</main>
+
+<!-- ============================================================ I. the name -->
+<section class="panel t-black hero" id="hero">
+	<div class="light" aria-hidden="true"></div>
+
+	<h1 class="giant" aria-label="PMNDRE" data-name><span class="name"><b>P</b><b class="x">O</b><b class="x">I</b><b>M</b><b class="x">A</b><b>N</b><b>D</b><b>R</b><b>E</b></span></h1>
+
+	<div class="bar" aria-hidden="true">
+		<svg class="ico" viewBox="0 0 24 24"><path d="M3 12h17M14 6l6 6-6 6"/></svg>
+		<span class="hatch"><span class="fill"></span></span>
+		<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5" class="dot"/></svg>
+	</div>
+
+	<div class="stage">
+		<div class="well">
+			<div class="mark" aria-hidden="true">
+				<svg class="rings" viewBox="-500 -500 1000 1000">
+					<defs><path id="orbit" d="M0 -455a455 455 0 1 1 0 910a455 455 0 1 1 0 -910"/></defs>
+					<g class="spin">
+						<circle r="455"/>
+						<circle r="482" class="ticks"/>
+						<text><textPath href="#orbit">POIMANDRE · OR THE VISION · PMNDRE · OPEN SOURCE DEVELOPER COLLECTIVE · LIB. II · XVII · POIMANDRE · OR THE VISION ·</textPath></text>
+					</g>
+					<g class="spin back">
+						<circle r="400" class="dash"/>
+						<path d="M-500 0H500M0 -500V500"/>
+					</g>
+				</svg>
+				<svg class="ghost" viewBox="0 0 800 800"><path d="M280 560h240v240H280zM280 280h240v240H280zM0 280h240v240H0zM560 0H280v240h280v280h240V0z"/></svg>
+				<i class="piece d"></i>
+				<i class="piece b"><em>II</em></i>
+				<i class="piece c"></i>
+				<i class="piece a"><em>+</em></i>
+			</div>
+		</div>
+
+		<div class="intro">
+			<p class="mono dim">PMNDRE · Lib. II</p>
+			<h2>Poimandre</h2>
+			<p class="sub">Open source developer collective</p>
+			<ul class="rows">
+				<li><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M8 12h8M12 8v8"/></svg><span><em>Fragmentary writings, put forth as one</em><b>17</b></span><i>01</i></li>
+				<li><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><circle cx="12" cy="12" r="3"/></svg><span><em>The second book, The Vision</em><b>II</b></span><i>02</i></li>
+			</ul>
+		</div>
+	</div>
+
+	<footer class="foot">
+		<div class="rule" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12h17M14 6l6 6-6 6"/></svg></div>
+		<div class="row mono">
+			<span class="brand"><svg viewBox="0 0 800 800" aria-hidden="true"><use href="#p"/></svg>PMND.RE</span>
+			<span class="mid">Open source developer collective</span>
+			<a class="r" href="#vision">The Vision ↓</a>
+		</div>
+	</footer>
+</section>
+
+<!-- ============================================================ II. the vision -->
+<section class="panel t-paper vision" id="vision">
+	<div class="big" aria-hidden="true"><span>VISION</span></div>
+
+	<header class="row mono">
+		<span>Lib. II</span>
+		<span class="mid">The Divine Pymander</span>
+	</header>
+
+	<h2 class="title"><span>Poimandre,</span> <span class="or">or The Vision</span></h2>
+
+	<div class="body">
+		<div class="veil" data-veil>
+			<p><em>The Divine Pymander</em> is one of the earliest of the Hermetic writings now extant. While probably not in its original form, having been remodeled and incorrectly translated since, this work undoubtedly contains many of the original concepts of the Hermetic cultus. The Divine Pymander consists of <em>seventeen fragmentary writings</em> gathered together and put forth as one work.</p>
+			<p>The second book of The Divine Pymander, called <em>Poimandre, or The Vision,</em> is believed to describe the method by which the divine wisdom was first revealed. It was after <em>Hermes Mercurius Trismegistus</em> had received this revelation that he began his ministry, teaching to all who would listen <em>the secrets of the invisible</em> as they had been unfolded to him.</p>
+		</div>
+		<aside class="note mono dim">
+			<p class="fine">Point at the text.<br>What is near the eye is seen.</p>
+			<p class="coarse">What passes the line is seen.</p>
+		</aside>
+	</div>
+
+	<p class="cite mono">Manly Palmer Hall — The Secret Teachings of All Ages</p>
+
+	<div class="lens" aria-hidden="true"><i></i><span class="mono"></span></div>
+	<div class="scan" aria-hidden="true"><span class="mono">Visio</span><span class="mono pct"></span></div>
+
+	<div class="row mono frags-head"><span>XVII</span><span class="mid">Fragmentary writings, gathered together</span></div>
+	<ol class="frags" aria-hidden="true">
+		<li>I</li><li class="on"><b>II</b><span>Poimandre</span></li><li>III</li><li>IV</li><li>V</li><li>VI</li><li>VII</li><li>VIII</li><li>IX</li><li>X</li><li>XI</li><li>XII</li><li>XIII</li><li>XIV</li><li>XV</li><li>XVI</li><li>XVII</li>
+	</ol>
+</section>
+
+<!-- ============================================================ the end -->
+<footer class="panel t-dark end">
+	<div class="ends">
+		<svg class="logo" viewBox="0 0 800 800" aria-hidden="true"><use href="#p"/></svg>
+		<div class="who">
+			<p class="wordmark">PMNDRE</p>
+			<p class="dim">Open source developer collective</p>
+		</div>
+		<ul class="links mono">
+			<li><a href="https://github.com/pmndre">github.com/pmndre ↗</a></li>
+			<li><a href="https://pine.pmnd.re">pine.pmnd.re ↗</a></li>
+		</ul>
+	</div>
+	<div class="ticker mono" aria-hidden="true"><div><span>Poimandre · or The Vision · PMNDRE · the secrets of the invisible · </span><span>Poimandre · or The Vision · PMNDRE · the secrets of the invisible · </span></div></div>
+</footer>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+	<symbol id="p" viewBox="0 0 800 800"><path fill="currentColor" d="M280 560h240v240H280zM280 280h240v240H280zM0 280h240v240H0zM560 0H280v240h280v280h240V0z"/></symbol>
+</svg>
 </body>
 </html>
