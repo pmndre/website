@@ -361,35 +361,46 @@ body.fallen > .panel { transition: transform 1.25s cubic-bezier(0.55, 0, 0.9, 0.
 body.rising > .panel { transition: transform 1.1s var(--ease) var(--delay, 0s), opacity 0.8s var(--ease) var(--delay, 0s); }
 
 /* ================================================================ works
-   Each work is a band of the panel in three rows of the grid: its labels, its block name, which runs
-   past both edges of the panel and slides sideways as the page scrolls (pine one way, pinecone the
-   other), and the words about it. The name and the words never cross. */
+   The works stand side by side, each on six columns of the grid, in three rows: its labels, its
+   block name, and the words about it. A name is cut by the edges of its half and slides sideways as
+   the page scrolls (pine one way, pinecone the other); a name longer than its half is carried
+   through it from its first letter to its last. On a phone they stand one above the other. */
 
-.works { padding-top: 22px; padding-bottom: 0; }
-.work {
+.works {
 	display: grid;
 	grid-template-columns: repeat(12, minmax(0, 1fr));
 	column-gap: var(--g);
+	align-content: start;
+	padding-top: 22px;
+	padding-bottom: 0;
+}
+.works > header { grid-column: 1 / -1; }
+/* The two halves share their rows, so labels, names and words stand on the same lines. */
+.work {
+	grid-column: span 6;
+	grid-row: 2 / span 3;
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	grid-template-rows: subgrid;
+	column-gap: var(--g);
 	row-gap: clamp(28px, 3.4vw, 56px);
 	align-items: end;
+	margin-top: 22px;
 	padding: 18px 0 var(--p);
 	border-top: 1px solid var(--line);
 	text-decoration: none !important;
 }
-.works > header + .work { margin-top: 22px; }
 .meta { display: contents; }
 .wm {
 	grid-column: 1 / -1;
 	grid-row: 2;
 	position: relative;
-	height: clamp(56px, 8.6vw, 150px);
-	margin: 0 calc(var(--p) * -1);
-	padding-left: var(--p);
+	height: clamp(44px, 6.4vw, 112px);
 	overflow: hidden;
 	pointer-events: none;
 }
-.wm svg { position: absolute; left: var(--p); top: 0; height: 100%; width: auto; color: var(--white); transform: translate3d(var(--x, 0px), 0, 0); will-change: transform; overflow: visible; }
-.wm svg:first-child { position: relative; left: 0; display: block; }
+.wm svg { position: absolute; left: 0; top: 0; height: 100%; width: auto; color: var(--white); transform: translate3d(var(--x, 0px), 0, 0); will-change: transform; overflow: visible; }
+.wm svg:first-child { position: relative; display: block; }
 /* The outline: its width is set from the size it is drawn at (main.js), so it stays a hairline. */
 .hollow .wm svg:first-child, .wm .echo.line { color: transparent; stroke: var(--white); stroke-width: var(--sw, 4); }
 .wm .echo.solid { color: var(--white); stroke: none; }
@@ -400,17 +411,17 @@ body.rising > .panel { transition: transform 1.1s var(--ease) var(--delay, 0s), 
 .wm .bar { position: absolute; display: block; height: 2px; background: var(--white); mix-blend-mode: difference; opacity: 0; pointer-events: none; }
 
 .meta .n { grid-column: 1 / span 2; grid-row: 1; }
-.meta .go { grid-column: 9 / -1; grid-row: 1; text-align: right; }
-.meta .txt { grid-column: 9 / -1; grid-row: 3; display: grid; gap: 8px; }
-.hollow .meta .txt { grid-column: 1 / span 4; }
+.meta .go { grid-column: 3 / -1; grid-row: 1; text-align: right; }
+.meta .txt { grid-column: 1 / span 4; grid-row: 3; align-self: start; display: grid; gap: 8px; }
 .txt b { display: block; font-weight: 800; font-size: clamp(30px, 2.8vw, 48px); line-height: 0.95; letter-spacing: -0.04em; }
 .txt span { font-size: 16px; max-width: 30ch; color: var(--dim); }
 .work:hover .go { text-decoration: underline; text-underline-offset: 0.25em; }
 
 @media (max-width: 899px) {
+	.work { grid-column: 1 / -1; grid-row: auto; grid-template-rows: none; }
+	.work + .work { margin-top: 0; }
 	.wm { height: clamp(48px, 15vw, 110px); }
-	.meta .txt, .hollow .meta .txt { grid-column: 1 / -1; }
-	.meta .go { grid-column: 5 / -1; }
+	.meta .txt { grid-column: 1 / -1; }
 }
 
 /* ================================================================ the end */

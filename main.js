@@ -1,7 +1,7 @@
 // What moves on the page. Nothing here is needed to read it: without this file (or with reduced
 // motion asked for) the name reads PMNDRE, the P stands whole and the text is plain.
 
-import { wake, tone, awake, isMuted, setMuted, light as dawn, silence, crash, NAMES } from "./sound.js?v=8";
+import { wake, tone, awake, isMuted, setMuted, light as dawn, silence, crash, NAMES } from "./sound.js?v=9";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (s, r = document) => r.querySelector(s);
@@ -406,7 +406,7 @@ function inkAlign() {
 }
 
 // The works' names: each slides sideways across its band as the band passes through the window,
-// pine to the right and pinecone to the left; coming in and going out, the panel's edges cut them.
+// pine to the right and pinecone to the left; coming in and going out, the edges of its half cut it.
 const works = $$(".work").map((el) => ({ el, wm: $(".wm", el), svg: $(".wm svg", el), dir: +el.dataset.dir, top: 0, h: 0, over: 0, swing: 0 }));
 function measureWorks() {
 	for (const w of works) {
@@ -414,7 +414,7 @@ function measureWorks() {
 		const drawn = w.svg.getBoundingClientRect();
 		w.top = box.top + scrollY;
 		w.h = box.height;
-		const room = box.width - 2 * parseFloat(getComputedStyle(vision).paddingLeft);
+		const room = w.wm.getBoundingClientRect().width;
 		// How far it runs past the band, if it does, and how far it swings around its place.
 		w.over = Math.max(0, drawn.width - room);
 		w.swing = box.width * 0.3;
