@@ -1,7 +1,7 @@
 // What moves on the page. Nothing here is needed to read it: without this file (or with reduced
 // motion asked for) the name reads PMNDRE, the P stands whole and the text is plain.
 
-import { wake, tone, awake, isMuted, setMuted, drone, sphere, light as dawn, silence, crash, NAMES } from "./sound.js?v=5";
+import { wake, tone, awake, isMuted, setMuted, light as dawn, silence, crash, NAMES } from "./sound.js?v=6";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (s, r = document) => r.querySelector(s);
@@ -229,7 +229,7 @@ soundLabel.addEventListener("click", () => {
 		drone(false);
 	} else {
 		setMuted(false);
-		wake().then(() => (label(), ascending && ((shown = -2), drone(true))));
+		wake().then(() => (label(), ascending && dawn(true)));
 	}
 	wasOn = awake();
 	label();
@@ -239,38 +239,27 @@ for (const type of ["pointerdown", "keydown", "touchend"]) {
 	addEventListener(type, (e) => {
 		if (e.target instanceof Element && e.target.closest("[data-sound]")) return;
 		if (isMuted()) return;
-		wake().then(() => (label(), ascending && ((shown = -2), drone(true))));
+		wake().then(() => (label(), ascending && dawn(true)));
 	}, { passive: true });
 }
 
-// ---------------------------------------------------------------- XVIII, the ascent
-// The melody opens it. In the vision, the soul rises through seven spheres and gives back at each
-// what it had taken of it, until it reaches the Eighth and is light. So: the page falls away, and
-// scrolling climbs through seven turning rings, each a sphere named as Mead's translation (1906)
-// names what is given back there. A ring is veiled until it is reached, decodes, adds its note to a
-// chord, and swells past. After the seventh the window floods with light; the P stands in it, and
-// the pointer is the light that throws its shadows.
+// ---------------------------------------------------------------- XVIII, the vision
+// The melody opens it: the page falls away, and there is light, the P standing in it, and the
+// pointer, which is the source of the light, throwing the P's shadow far across it. A click or a tap
+// anywhere, or Escape, brings the page back.
 
-const SPHERES = ["Growth and Waning", "Device of Evils", "Guile of the Desires", "Domineering Arrogance", "Unholy Daring", "Striving for Wealth", "Ensnaring Falsehood"];
 const ascent = $("#ascent");
-const stage = $(".stage", ascent);
 const sky = $("canvas", ascent);
 const brush = sky.getContext("2d");
-const zoneLabel = $("[data-zone]", ascent);
-const nameLine = $("[data-name]", ascent);
-const subLine = $("[data-sub]", ascent);
 let ascending = false;
-let rise = 0;
-let shown = -2;
-let decoding = 0;
-let tearUntil = 0;
-const glow = { x: innerWidth / 2, y: innerHeight * 0.3 };
+let opened = 0;
+const glow = { x: innerWidth * 0.78, y: innerHeight * 0.2 };
 
 function unlock() {
 	if (!tilesOf()[17]) {
 		const li = document.createElement("li");
 		li.className = "xviii";
-		li.innerHTML = "<b>XVIII</b><span>The Ascent</span>";
+		li.innerHTML = "<b>XVIII</b><span>The Vision</span>";
 		frags.append(li);
 		frags.classList.add("eighteen");
 		number();
@@ -278,16 +267,15 @@ function unlock() {
 	ascend();
 }
 
-// The panels fall, each with its own delay, tilt and drift; then they are gone.
+// The panels fall, each with its own delay, tilt and drift.
 function fall() {
-	const panels = $$("body > .panel");
-	panels.forEach((p, i) => {
+	for (const p of $$("body > .panel")) {
 		const r = p.getBoundingClientRect();
 		const seen = r.bottom > 0 && r.top < innerHeight;
 		p.style.setProperty("--delay", `${seen ? rand(0, 0.35) : 0}s`);
 		p.style.setProperty("--fr", `${rand(-9, 9).toFixed(1)}deg`);
 		p.style.setProperty("--fx", `${rand(-80, 80).toFixed(0)}px`);
-	});
+	}
 	document.body.classList.remove("rising");
 	document.body.classList.add("fallen");
 }
@@ -295,30 +283,15 @@ function fall() {
 function ascend() {
 	if (ascending) return;
 	ascending = true;
-	rise = 0;
-	shown = -2;
+	opened = performance.now();
 	ascent.hidden = false;
-	ascent.scrollTop = 0;
 	ascent.classList.remove("lit");
 	document.documentElement.style.overflow = "hidden";
 	crash();
-	drone(true);
-	tearUntil = performance.now() + 900;
-	if (reduce) {
-		document.body.classList.add("fallen");
-		ascent.style.setProperty("--dark", "1");
-		stage.style.setProperty("--show", "1");
-	} else {
-		fall();
-		const t0 = performance.now();
-		const fade = (now) => {
-			const k = clamp((now - t0) / 1400);
-			ascent.style.setProperty("--dark", ease(k).toFixed(3));
-			stage.style.setProperty("--show", clamp((now - t0 - 700) / 900).toFixed(3));
-			if (k < 1 || now - t0 < 1600) requestAnimationFrame(fade);
-		};
-		requestAnimationFrame(fade);
-	}
+	setTimeout(() => ascending && dawn(true), 700);
+	setTimeout(() => ascending && ascent.classList.add("lit"), 900);
+	if (reduce) document.body.classList.add("fallen");
+	else fall();
 	requestAnimationFrame(sky_);
 }
 
@@ -326,13 +299,14 @@ function descend() {
 	if (!ascending) return;
 	ascending = false;
 	silence();
+	ascent.classList.remove("lit");
 	const t0 = performance.now();
 	const out = (now) => {
 		const k = clamp((now - t0) / 700);
-		ascent.style.setProperty("--dark", (1 - k).toFixed(3));
-		stage.style.setProperty("--show", (1 - k).toFixed(3));
+		ascent.style.opacity = String(1 - k);
 		if (k < 1) return requestAnimationFrame(out);
 		ascent.hidden = true;
+		ascent.style.opacity = "";
 		document.documentElement.style.overflow = "";
 	};
 	requestAnimationFrame(out);
@@ -343,51 +317,25 @@ function descend() {
 	setTimeout(() => document.body.classList.remove("rising"), 1800);
 }
 
-$("[data-descend]", ascent).addEventListener("click", descend);
 addEventListener("keydown", (e) => e.key === "Escape" && descend());
+// A press that moves is the light being carried; one that does not is the way back.
+let downAt = null;
+ascent.addEventListener("pointerdown", (e) => (downAt = { x: e.clientX, y: e.clientY, t: performance.now() }));
 ascent.addEventListener("pointermove", (e) => {
 	glow.x = e.clientX;
 	glow.y = e.clientY;
 });
+ascent.addEventListener("pointerup", (e) => {
+	if (!downAt || performance.now() - opened < 1200) return;
+	const still = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 8;
+	downAt = null;
+	if (still) descend();
+});
 
-// Which sphere one is in, the chord that goes with it, and the words for it.
-function reach(zone) {
-	if (zone === shown) return;
-	const up = zone > shown;
-	shown = zone;
-	for (let k = 0; k < 7; k++) sphere(k, k < zone);
-	dawn(zone >= 8);
-	if (up && zone > 0) tearUntil = performance.now() + 380;
-	ascent.classList.toggle("lit", zone >= 8);
-	if (zone <= 0) say("", "", "");
-	else if (zone <= 7) say(`Zone ${ROMAN[zone - 1]} of VII · given back · ${NAMES[zone - 1 + 7]}`, SPHERES[zone - 1], `Zone ${ROMAN[zone - 1]}`);
-	else say("", "", "The Eighth");
-}
-
-function say(sub, name, zone) {
-	subLine.textContent = sub;
-	zoneLabel.textContent = zone;
-	const letters = [...name];
-	const t0 = performance.now();
-	const id = ++decoding;
-	const step = (now) => {
-		if (id !== decoding) return;
-		const k = reduce ? letters.length : Math.floor(clamp((now - t0) / 650) * letters.length);
-		nameLine.textContent = letters.slice(0, k).join("");
-		if (k < letters.length) {
-			const i = document.createElement("i");
-			i.textContent = letters.slice(k).map((c) => (c === " " ? " " : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join("");
-			nameLine.append(i);
-			requestAnimationFrame(step);
-		} else inkAlign();
-	};
-	requestAnimationFrame(step);
-}
-
-// The drawing: rings that come toward one and swell past, a point of light that grows, then the light.
+// The drawing: black, then the light floods in; the P and the shadow its source throws.
 const P_BLOCKS = [[280, 560, 240, 240], [280, 280, 240, 240], [0, 280, 240, 240], [280, 0, 520, 240], [560, 240, 240, 280]];
 function sky_(now) {
-	if (!ascending && ascent.hidden) return;
+	if (ascent.hidden) return;
 	const dpr = Math.min(2, devicePixelRatio || 1);
 	const W = sky.clientWidth;
 	const H = sky.clientHeight;
@@ -395,99 +343,26 @@ function sky_(now) {
 		sky.width = Math.round(W * dpr);
 		sky.height = Math.round(H * dpr);
 	}
-	const max = ascent.scrollHeight - ascent.clientHeight;
-	const target = max > 0 ? ascent.scrollTop / max : 0;
-	rise += (target - rise) * 0.12;
-	// Nine stages: below the first sphere, the seven, and the Eighth.
-	const z = rise * 8.6;
-	reach(z < 0.35 ? 0 : Math.min(8, Math.floor(z - 0.35) + 1));
-
 	brush.setTransform(dpr, 0, 0, dpr, 0, 0);
+	const t = now - opened;
+	const dark = reduce ? 1 : clamp(t / 600);
+	const light = reduce ? 1 : smooth(clamp((t - 700) / 1100));
+	brush.fillStyle = `rgba(18,18,18,${dark})`;
 	brush.clearRect(0, 0, W, H);
-	const cx = W / 2;
-	const cy = H * 0.44;
-	const ref = Math.min(W, H) * 0.3;
-	const white = smooth(clamp((z - 7.6) / 0.8));
-
-	// The light at the centre, growing as one rises.
-	const core = 2 + z ** 2.2 * 2.2;
-	const g = brush.createRadialGradient(cx, cy, 0, cx, cy, core * 6);
-	g.addColorStop(0, "rgba(242,242,240,0.95)");
-	g.addColorStop(0.2, "rgba(242,242,240,0.35)");
-	g.addColorStop(1, "rgba(242,242,240,0)");
-	brush.fillStyle = g;
-	brush.beginPath();
-	brush.arc(cx, cy, core * 6, 0, Math.PI * 2);
-	brush.fill();
-
-	for (let k = 6; k >= 0; k--) {
-		const d = z - (k + 1);
-		const r = ref * Math.pow(2.3, d);
-		if (r < 6 || r > Math.hypot(W, H) * 1.4) continue;
-		const alpha = (d < 0 ? clamp(1 + d * 0.45) : clamp(1 - d * 0.9)) * (1 - white);
-		if (alpha <= 0.01) continue;
-		ring(cx, cy, r, k, clamp((d + 0.7) / 0.6), alpha, now);
-	}
-
-	if (white > 0) {
-		brush.fillStyle = `rgba(242,242,240,${white})`;
+	brush.fillRect(0, 0, W, H);
+	if (light > 0) {
+		brush.fillStyle = `rgba(242,242,240,${light})`;
 		brush.fillRect(0, 0, W, H);
-		if (white > 0.5) shadows(cx, cy, Math.min(W, H) * 0.22, (white - 0.5) * 2);
+		shadows(W / 2, H * 0.46, Math.min(W, H) * 0.24, light);
 	}
-	if (now < tearUntil && !reduce) tear(W, H, dpr);
 	requestAnimationFrame(sky_);
 }
 
-// One sphere: its circle, ticks, and its name around it, veiled until it is reached.
-function ring(cx, cy, r, k, decoded, alpha, now) {
-	brush.save();
-	brush.translate(cx, cy);
-	brush.globalAlpha = alpha;
-	brush.strokeStyle = "rgba(242,242,240,0.5)";
-	brush.lineWidth = 1;
-	brush.beginPath();
-	brush.arc(0, 0, r, 0, Math.PI * 2);
-	brush.stroke();
-	brush.setLineDash([1, 9]);
-	brush.lineWidth = 8;
-	brush.strokeStyle = "rgba(242,242,240,0.25)";
-	brush.beginPath();
-	brush.arc(0, 0, r * 1.06, 0, Math.PI * 2);
-	brush.stroke();
-	brush.setLineDash([]);
-
-	const fs = Math.max(9, Math.min(64, r * 0.07));
-	brush.font = `500 ${fs}px "JetBrains Mono", monospace`;
-	brush.textAlign = "center";
-	brush.textBaseline = "middle";
-	const text = `${ROMAN[k]} · ${SPHERES[k].toUpperCase()} · `;
-	const step = (fs * 0.66) / (r * 0.98);
-	const count = Math.min(260, Math.floor((Math.PI * 2) / step));
-	const turn = now / 1000 * (0.05 + k * 0.012) * (k % 2 ? -1 : 1);
-	const settled = Math.floor(decoded * count);
-	for (let i = 0; i < count; i++) {
-		const a = turn + i * step;
-		const x = Math.cos(a) * r * 0.98;
-		const y = Math.sin(a) * r * 0.98;
-		if (Math.abs(x + cx - cx) > cx + 40 && Math.abs(y) > cy + 40) continue;
-		const c = i < settled ? text[i % text.length] : GLYPHS[(Math.random() * GLYPHS.length) | 0];
-		brush.fillStyle = i < settled ? "rgba(242,242,240,0.95)" : "rgba(242,242,240,0.38)";
-		brush.save();
-		brush.translate(x, y);
-		brush.rotate(a + Math.PI / 2);
-		brush.fillText(c, 0, 0);
-		brush.restore();
-	}
-	brush.restore();
-}
-
-// The light: the P stands in it, and the pointer, the source of the light, throws its shadow far.
 function shadows(cx, cy, size, k) {
 	const s = size / 800;
 	const ox = cx - size / 2;
 	const oy = cy - size / 2;
-	const lx = glow.x;
-	const ly = glow.y;
+	const { x: lx, y: ly } = glow;
 	brush.save();
 	brush.globalAlpha = k;
 	brush.fillStyle = "#c9c9c6";
@@ -495,14 +370,14 @@ function shadows(cx, cy, size, k) {
 		const pts = [[ox + bx * s, oy + by * s], [ox + (bx + bw) * s, oy + by * s], [ox + (bx + bw) * s, oy + (by + bh) * s], [ox + bx * s, oy + (by + bh) * s]];
 		for (let i = 0; i < 4; i++) {
 			const [ax, ay] = pts[i];
-			const [bx2, by2] = pts[(i + 1) % 4];
+			const [cx2, cy2] = pts[(i + 1) % 4];
 			const far = 4000;
 			const fa = Math.hypot(ax - lx, ay - ly) || 1;
-			const fb = Math.hypot(bx2 - lx, by2 - ly) || 1;
+			const fb = Math.hypot(cx2 - lx, cy2 - ly) || 1;
 			brush.beginPath();
 			brush.moveTo(ax, ay);
-			brush.lineTo(bx2, by2);
-			brush.lineTo(bx2 + ((bx2 - lx) / fb) * far, by2 + ((by2 - ly) / fb) * far);
+			brush.lineTo(cx2, cy2);
+			brush.lineTo(cx2 + ((cx2 - lx) / fb) * far, cy2 + ((cy2 - ly) / fb) * far);
 			brush.lineTo(ax + ((ax - lx) / fa) * far, ay + ((ay - ly) / fa) * far);
 			brush.closePath();
 			brush.fill();
@@ -510,27 +385,7 @@ function shadows(cx, cy, size, k) {
 	}
 	brush.fillStyle = "#141414";
 	for (const [bx, by, bw, bh] of P_BLOCKS) brush.fillRect(ox + bx * s, oy + by * s, bw * s, bh * s);
-	// The source itself.
-	brush.fillStyle = "#f2f2f0";
-	brush.beginPath();
-	brush.arc(lx, ly, 5, 0, Math.PI * 2);
-	brush.fill();
-	brush.strokeStyle = "#141414";
-	brush.lineWidth = 1;
-	brush.stroke();
 	brush.restore();
-}
-
-// Crossing a sphere tears the picture: strips of it shifted sideways for a moment.
-function tear(W, H, dpr) {
-	for (let n = 0; n < 7; n++) {
-		const y = rand(0, H);
-		const h = rand(2, 40);
-		const dx = rand(-60, 60);
-		brush.setTransform(1, 0, 0, 1, 0, 0);
-		brush.drawImage(sky, 0, y * dpr, W * dpr, h * dpr, dx * dpr, y * dpr, W * dpr, h * dpr);
-	}
-	brush.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
 // ---------------------------------------------------------------- the grid, to the ink
