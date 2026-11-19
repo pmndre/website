@@ -215,3 +215,117 @@ export function drone(on) {
 		for (const o of oscs) o.stop(t + 1.6);
 	}
 }
+
+// ---------------------------------------------------------------- the ascent
+// Each of the seven spheres holds one note of the scale; reaching a sphere sounds it and it is held,
+// so that the chord grows as one rises. The light at the top is a bright D major that shimmers.
+
+const spheres = new Map();
+
+function held(freqs, { type = "sawtooth", cutoff = 700, level = 0.12, attack = 1.6, lfo = 0.11 } = {}) {
+	const t = ctx.currentTime;
+	const out = ctx.createGain();
+	out.gain.setValueAtTime(0, t);
+	out.gain.linearRampToValueAtTime(level, t + attack);
+	const filter = ctx.createBiquadFilter();
+	filter.type = "lowpass";
+	filter.frequency.value = cutoff;
+	filter.Q.value = 5;
+	const wob = ctx.createOscillator();
+	wob.frequency.value = lfo;
+	const depth = ctx.createGain();
+	depth.gain.value = cutoff * 0.45;
+	wob.connect(depth).connect(filter.frequency);
+	wob.start(t);
+	const oscs = [wob];
+	for (const f of freqs) {
+		for (const detune of [-6, 6]) {
+			const o = ctx.createOscillator();
+			o.type = type;
+			o.frequency.value = f;
+			o.detune.value = detune;
+			const g = ctx.createGain();
+			g.gain.value = 0.5 / freqs.length;
+			o.connect(g).connect(filter);
+			o.start(t);
+			oscs.push(o);
+		}
+	}
+	filter.connect(out).connect(bus);
+	return { out, oscs };
+}
+
+function release(voice, seconds = 1.4) {
+	const t = ctx.currentTime;
+	voice.out.gain.cancelScheduledValues(t);
+	voice.out.gain.setValueAtTime(voice.out.gain.value, t);
+	voice.out.gain.linearRampToValueAtTime(0, t + seconds);
+	for (const o of voice.oscs) o.stop(t + seconds + 0.1);
+}
+
+/** The note of sphere `k` (0 to 6), held while `on`. */
+export function sphere(k, on) {
+	if (!awake()) return;
+	if (on && !spheres.has(k)) {
+		tone(k + 7);
+		spheres.set(k, held([NOTES[k], NOTES[k] * 2], { cutoff: 520 + k * 140, level: 0.1, lfo: 0.06 + k * 0.025 }));
+	} else if (!on && spheres.has(k)) {
+		release(spheres.get(k));
+		spheres.delete(k);
+	}
+}
+
+let lightVoice = null;
+/** The light: a high D major, with a breath of noise. */
+export function light(on) {
+	if (!awake()) return;
+	if (on && !lightVoice) {
+		lightVoice = held([293.66, 369.99, 440, 587.33, 739.99], { type: "triangle", cutoff: 4200, level: 0.16, attack: 2.4, lfo: 0.3 });
+	} else if (!on && lightVoice) {
+		release(lightVoice, 2);
+		lightVoice = null;
+	}
+}
+
+/** Everything of the ascent falls silent. */
+export function silence() {
+	if (!ctx) return;
+	for (const v of spheres.values()) release(v);
+	spheres.clear();
+	if (lightVoice) release(lightVoice, 1.2);
+	lightVoice = null;
+	drone(false);
+}
+
+/** The page breaking: noise through a falling band, its bits lost, and a low thud. */
+export function crash() {
+	if (!awake()) return;
+	const t = ctx.currentTime;
+	const src = ctx.createBufferSource();
+	src.buffer = noise;
+	src.loop = true;
+	const band = ctx.createBiquadFilter();
+	band.type = "bandpass";
+	band.Q.value = 3;
+	band.frequency.setValueAtTime(6000, t);
+	band.frequency.exponentialRampToValueAtTime(120, t + 1.6);
+	const crush = ctx.createWaveShaper();
+	crush.curve = crushCurve;
+	const g = ctx.createGain();
+	g.gain.setValueAtTime(0.0001, t);
+	g.gain.exponentialRampToValueAtTime(0.9, t + 0.05);
+	g.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
+	src.connect(band).connect(crush).connect(g).connect(bus);
+	src.start(t);
+	src.stop(t + 1.9);
+	const thud = ctx.createOscillator();
+	thud.type = "sine";
+	thud.frequency.setValueAtTime(110, t);
+	thud.frequency.exponentialRampToValueAtTime(32, t + 0.9);
+	const tg = ctx.createGain();
+	tg.gain.setValueAtTime(0.8, t);
+	tg.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+	thud.connect(tg).connect(bus);
+	thud.start(t);
+	thud.stop(t + 1.2);
+}

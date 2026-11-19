@@ -1,7 +1,7 @@
 // What moves on the page. Nothing here is needed to read it: without this file (or with reduced
 // motion asked for) the name reads PMNDRE, the P stands whole and the text is plain.
 
-import { wake, tone, awake, isMuted, setMuted, drone, analyser, NAMES } from "./sound.js";
+import { wake, tone, awake, isMuted, setMuted, drone, sphere, light as dawn, silence, crash, NAMES } from "./sound.js";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (s, r = document) => r.querySelector(s);
@@ -183,6 +183,8 @@ function strike(i) {
 	const li = tilesOf()[i];
 	if (!li) return;
 	tone(i);
+	// What sounds tears the names of the works, the higher the note the harder.
+	for (const w of works) w.burst?.(rand(160, 380), 0.45 + (i / 17) * 0.55);
 	li.classList.remove("hit", "jit");
 	void li.offsetWidth;
 	li.classList.add("hit");
@@ -203,7 +205,7 @@ frags.addEventListener("pointerdown", (e) => {
 	const li = e.target.closest("li");
 	if (!li) return;
 	const i = +li.dataset.i;
-	if (i === 17) return open();
+	if (i === 17) return ascend();
 	pressed = true;
 	lastTile = i;
 	wake().then(() => strike(i));
@@ -227,7 +229,7 @@ soundLabel.addEventListener("click", () => {
 		drone(false);
 	} else {
 		setMuted(false);
-		wake().then(() => (label(), secretOpen && secretSeen && drone(true)));
+		wake().then(() => (label(), ascending && ((shown = -2), drone(true))));
 	}
 	wasOn = awake();
 	label();
@@ -237,133 +239,299 @@ for (const type of ["pointerdown", "keydown", "touchend"]) {
 	addEventListener(type, (e) => {
 		if (e.target instanceof Element && e.target.closest("[data-sound]")) return;
 		if (isMuted()) return;
-		wake().then(() => (label(), secretOpen && secretSeen && drone(true)));
+		wake().then(() => (label(), ascending && ((shown = -2), drone(true))));
 	}, { passive: true });
 }
 
-// ---------------------------------------------------------------- XVIII
-// The eighteenth fragment, which was not gathered: it opens when the melody is played, adds its
-// strip to the seventeen, and hums while it is in view.
+// ---------------------------------------------------------------- XVIII, the ascent
+// The melody opens it. In the vision, the soul rises through seven spheres and gives back at each
+// what it had taken of it, until it reaches the Eighth and is light. So: the page falls away, and
+// scrolling climbs through seven turning rings, each a sphere named as Mead's translation (1906)
+// names what is given back there. A ring is veiled until it is reached, decodes, adds its note to a
+// chord, and swells past. After the seventh the window floods with light; the P stands in it, and
+// the pointer is the light that throws its shadows.
 
-const secret = $("#xviii");
-const scope = $(".scope", secret);
-const unfold = $("[data-unfold]", secret);
-const hz = $("[data-hz]", secret);
-const WORDS = unfold.textContent;
-let secretOpen = false;
-let secretSeen = false;
+const SPHERES = ["Growth and Waning", "Device of Evils", "Guile of the Desires", "Domineering Arrogance", "Unholy Daring", "Striving for Wealth", "Ensnaring Falsehood"];
+const ascent = $("#ascent");
+const stage = $(".stage", ascent);
+const sky = $("canvas", ascent);
+const brush = sky.getContext("2d");
+const zoneLabel = $("[data-zone]", ascent);
+const nameLine = $("[data-name]", ascent);
+const subLine = $("[data-sub]", ascent);
+let ascending = false;
+let rise = 0;
+let shown = -2;
+let decoding = 0;
+let tearUntil = 0;
+const glow = { x: innerWidth / 2, y: innerHeight * 0.3 };
 
 function unlock() {
 	if (!tilesOf()[17]) {
 		const li = document.createElement("li");
 		li.className = "xviii";
-		li.innerHTML = "<b>XVIII</b><span>Unfolded</span>";
+		li.innerHTML = "<b>XVIII</b><span>The Ascent</span>";
 		frags.append(li);
 		frags.classList.add("eighteen");
 		number();
 	}
-	open();
+	ascend();
 }
 
-function open() {
-	secret.hidden = false;
-	secretOpen = true;
-	inkAlign();
-	requestAnimationFrame(() => secret.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }));
-	decode();
+// The panels fall, each with its own delay, tilt and drift; then they are gone.
+function fall() {
+	const panels = $$("body > .panel");
+	panels.forEach((p, i) => {
+		const r = p.getBoundingClientRect();
+		const seen = r.bottom > 0 && r.top < innerHeight;
+		p.style.setProperty("--delay", `${seen ? rand(0, 0.35) : 0}s`);
+		p.style.setProperty("--fr", `${rand(-9, 9).toFixed(1)}deg`);
+		p.style.setProperty("--fx", `${rand(-80, 80).toFixed(0)}px`);
+	});
+	document.body.classList.remove("rising");
+	document.body.classList.add("fallen");
 }
 
-$("[data-close]", secret).addEventListener("click", () => {
-	secret.hidden = true;
-	secretOpen = false;
-	drone(false);
-	frags.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+function ascend() {
+	if (ascending) return;
+	ascending = true;
+	rise = 0;
+	shown = -2;
+	ascent.hidden = false;
+	ascent.scrollTop = 0;
+	ascent.classList.remove("lit");
+	document.documentElement.style.overflow = "hidden";
+	crash();
+	drone(true);
+	tearUntil = performance.now() + 900;
+	if (reduce) {
+		document.body.classList.add("fallen");
+		ascent.style.setProperty("--dark", "1");
+		stage.style.setProperty("--show", "1");
+	} else {
+		fall();
+		const t0 = performance.now();
+		const fade = (now) => {
+			const k = clamp((now - t0) / 1400);
+			ascent.style.setProperty("--dark", ease(k).toFixed(3));
+			stage.style.setProperty("--show", clamp((now - t0 - 700) / 900).toFixed(3));
+			if (k < 1 || now - t0 < 1600) requestAnimationFrame(fade);
+		};
+		requestAnimationFrame(fade);
+	}
+	requestAnimationFrame(sky_);
+	$("[data-descend]", ascent).focus({ preventScroll: true });
+}
+
+function descend() {
+	if (!ascending) return;
+	ascending = false;
+	silence();
+	const t0 = performance.now();
+	const out = (now) => {
+		const k = clamp((now - t0) / 700);
+		ascent.style.setProperty("--dark", (1 - k).toFixed(3));
+		stage.style.setProperty("--show", (1 - k).toFixed(3));
+		if (k < 1) return requestAnimationFrame(out);
+		ascent.hidden = true;
+		document.documentElement.style.overflow = "";
+	};
+	requestAnimationFrame(out);
+	// The page comes back, block by block.
+	$$("body > .panel").forEach((p) => p.style.setProperty("--delay", `${rand(0.1, 0.5).toFixed(2)}s`));
+	document.body.classList.add("rising");
+	document.body.classList.remove("fallen");
+	setTimeout(() => document.body.classList.remove("rising"), 1800);
+}
+
+$("[data-descend]", ascent).addEventListener("click", descend);
+addEventListener("keydown", (e) => e.key === "Escape" && descend());
+ascent.addEventListener("pointermove", (e) => {
+	glow.x = e.clientX;
+	glow.y = e.clientY;
 });
 
-new IntersectionObserver((seen) => {
-	secretSeen = seen[0].isIntersecting;
-	drone(secretSeen && secretOpen && awake());
-	if (secretSeen) requestAnimationFrame(draw);
-}).observe(secret);
-
-function decode() {
-	const letters = [...WORDS];
-	const start = performance.now();
-	const step = (now) => {
-		const k = Math.floor(clamp((now - start - 500) / 2600) * letters.length);
-		const rest = letters.slice(k).map((c) => (c === " " ? " " : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join("");
-		unfold.innerHTML = "";
-		unfold.append(letters.slice(0, k).join(""));
-		if (rest) {
-			const i = document.createElement("i");
-			i.textContent = rest;
-			unfold.append(i);
-			requestAnimationFrame(step);
-		}
-	};
-	if (reduce) unfold.textContent = WORDS;
-	else requestAnimationFrame(step);
+// Which sphere one is in, the chord that goes with it, and the words for it.
+function reach(zone) {
+	if (zone === shown) return;
+	const up = zone > shown;
+	shown = zone;
+	for (let k = 0; k < 7; k++) sphere(k, k < zone);
+	dawn(zone >= 8);
+	if (up && zone > 0) tearUntil = performance.now() + 380;
+	ascent.classList.toggle("lit", zone >= 8);
+	if (zone <= 0) say("", "Scroll to rise", "Seven spheres above");
+	else if (zone <= 7) say(`Zone ${ROMAN[zone - 1]} of VII · given back · ${NAMES[zone - 1 + 7]}`, SPHERES[zone - 1], `Zone ${ROMAN[zone - 1]}`);
+	else say("as they had been unfolded to him", "the secrets of the invisible", "The Eighth");
 }
 
-// The oscilloscope: what the sound is doing, or a slow line when there is none.
-const pen = scope.getContext("2d");
-let wave = null;
-function draw(now) {
-	if (!secretSeen || !secretOpen) return;
+function say(sub, name, zone) {
+	subLine.textContent = sub;
+	zoneLabel.textContent = zone;
+	const letters = [...name];
+	const t0 = performance.now();
+	const id = ++decoding;
+	const step = (now) => {
+		if (id !== decoding) return;
+		const k = reduce ? letters.length : Math.floor(clamp((now - t0) / 650) * letters.length);
+		nameLine.textContent = letters.slice(0, k).join("");
+		if (k < letters.length) {
+			const i = document.createElement("i");
+			i.textContent = letters.slice(k).map((c) => (c === " " ? " " : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join("");
+			nameLine.append(i);
+			requestAnimationFrame(step);
+		} else inkAlign();
+	};
+	requestAnimationFrame(step);
+}
+
+// The drawing: rings that come toward one and swell past, a point of light that grows, then the light.
+const P_BLOCKS = [[280, 560, 240, 240], [280, 280, 240, 240], [0, 280, 240, 240], [280, 0, 520, 240], [560, 240, 240, 280]];
+function sky_(now) {
+	if (!ascending && ascent.hidden) return;
 	const dpr = Math.min(2, devicePixelRatio || 1);
-	const w = scope.clientWidth;
-	const h = scope.clientHeight;
-	if (scope.width !== Math.round(w * dpr) || scope.height !== Math.round(h * dpr)) {
-		scope.width = Math.round(w * dpr);
-		scope.height = Math.round(h * dpr);
+	const W = sky.clientWidth;
+	const H = sky.clientHeight;
+	if (sky.width !== Math.round(W * dpr) || sky.height !== Math.round(H * dpr)) {
+		sky.width = Math.round(W * dpr);
+		sky.height = Math.round(H * dpr);
 	}
-	pen.setTransform(dpr, 0, 0, dpr, 0, 0);
-	pen.clearRect(0, 0, w, h);
-	// The grid of a screen of instruments: the page's own twelve columns, both edges of each.
-	const css = getComputedStyle(secret);
-	const p = parseFloat(css.paddingLeft);
-	const g = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--g"));
-	const col = (w - 2 * p - 11 * g) / 12;
-	pen.strokeStyle = "rgba(242,242,240,0.08)";
-	pen.lineWidth = 1;
-	pen.beginPath();
-	for (let c = 0; c < 12; c++) {
-		for (const x of [p + c * (col + g), p + c * (col + g) + col]) {
-			pen.moveTo(Math.round(x) + 0.5, 0);
-			pen.lineTo(Math.round(x) + 0.5, h);
+	const max = ascent.scrollHeight - ascent.clientHeight;
+	const target = max > 0 ? ascent.scrollTop / max : 0;
+	rise += (target - rise) * 0.12;
+	// Nine stages: below the first sphere, the seven, and the Eighth.
+	const z = rise * 8.6;
+	reach(z < 0.35 ? 0 : Math.min(8, Math.floor(z - 0.35) + 1));
+
+	brush.setTransform(dpr, 0, 0, dpr, 0, 0);
+	brush.clearRect(0, 0, W, H);
+	const cx = W / 2;
+	const cy = H * 0.44;
+	const ref = Math.min(W, H) * 0.3;
+	const white = smooth(clamp((z - 7.6) / 0.8));
+
+	// The light at the centre, growing as one rises.
+	const core = 2 + z ** 2.2 * 2.2;
+	const g = brush.createRadialGradient(cx, cy, 0, cx, cy, core * 6);
+	g.addColorStop(0, "rgba(242,242,240,0.95)");
+	g.addColorStop(0.2, "rgba(242,242,240,0.35)");
+	g.addColorStop(1, "rgba(242,242,240,0)");
+	brush.fillStyle = g;
+	brush.beginPath();
+	brush.arc(cx, cy, core * 6, 0, Math.PI * 2);
+	brush.fill();
+
+	for (let k = 6; k >= 0; k--) {
+		const d = z - (k + 1);
+		const r = ref * Math.pow(2.3, d);
+		if (r < 6 || r > Math.hypot(W, H) * 1.4) continue;
+		const alpha = (d < 0 ? clamp(1 + d * 0.45) : clamp(1 - d * 0.9)) * (1 - white);
+		if (alpha <= 0.01) continue;
+		ring(cx, cy, r, k, clamp((d + 0.7) / 0.6), alpha, now);
+	}
+
+	if (white > 0) {
+		brush.fillStyle = `rgba(242,242,240,${white})`;
+		brush.fillRect(0, 0, W, H);
+		if (white > 0.5) shadows(cx, cy, Math.min(W, H) * 0.22, (white - 0.5) * 2);
+	}
+	if (now < tearUntil && !reduce) tear(W, H, dpr);
+	requestAnimationFrame(sky_);
+}
+
+// One sphere: its circle, ticks, and its name around it, veiled until it is reached.
+function ring(cx, cy, r, k, decoded, alpha, now) {
+	brush.save();
+	brush.translate(cx, cy);
+	brush.globalAlpha = alpha;
+	brush.strokeStyle = "rgba(242,242,240,0.5)";
+	brush.lineWidth = 1;
+	brush.beginPath();
+	brush.arc(0, 0, r, 0, Math.PI * 2);
+	brush.stroke();
+	brush.setLineDash([1, 9]);
+	brush.lineWidth = 8;
+	brush.strokeStyle = "rgba(242,242,240,0.25)";
+	brush.beginPath();
+	brush.arc(0, 0, r * 1.06, 0, Math.PI * 2);
+	brush.stroke();
+	brush.setLineDash([]);
+
+	const fs = Math.max(9, Math.min(64, r * 0.07));
+	brush.font = `500 ${fs}px "JetBrains Mono", monospace`;
+	brush.textAlign = "center";
+	brush.textBaseline = "middle";
+	const text = `${ROMAN[k]} · ${SPHERES[k].toUpperCase()} · `;
+	const step = (fs * 0.66) / (r * 0.98);
+	const count = Math.min(260, Math.floor((Math.PI * 2) / step));
+	const turn = now / 1000 * (0.05 + k * 0.012) * (k % 2 ? -1 : 1);
+	const settled = Math.floor(decoded * count);
+	for (let i = 0; i < count; i++) {
+		const a = turn + i * step;
+		const x = Math.cos(a) * r * 0.98;
+		const y = Math.sin(a) * r * 0.98;
+		if (Math.abs(x + cx - cx) > cx + 40 && Math.abs(y) > cy + 40) continue;
+		const c = i < settled ? text[i % text.length] : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+		brush.fillStyle = i < settled ? "rgba(242,242,240,0.95)" : "rgba(242,242,240,0.38)";
+		brush.save();
+		brush.translate(x, y);
+		brush.rotate(a + Math.PI / 2);
+		brush.fillText(c, 0, 0);
+		brush.restore();
+	}
+	brush.restore();
+}
+
+// The light: the P stands in it, and the pointer, the source of the light, throws its shadow far.
+function shadows(cx, cy, size, k) {
+	const s = size / 800;
+	const ox = cx - size / 2;
+	const oy = cy - size / 2;
+	const lx = glow.x;
+	const ly = glow.y;
+	brush.save();
+	brush.globalAlpha = k;
+	brush.fillStyle = "#c9c9c6";
+	for (const [bx, by, bw, bh] of P_BLOCKS) {
+		const pts = [[ox + bx * s, oy + by * s], [ox + (bx + bw) * s, oy + by * s], [ox + (bx + bw) * s, oy + (by + bh) * s], [ox + bx * s, oy + (by + bh) * s]];
+		for (let i = 0; i < 4; i++) {
+			const [ax, ay] = pts[i];
+			const [bx2, by2] = pts[(i + 1) % 4];
+			const far = 4000;
+			const fa = Math.hypot(ax - lx, ay - ly) || 1;
+			const fb = Math.hypot(bx2 - lx, by2 - ly) || 1;
+			brush.beginPath();
+			brush.moveTo(ax, ay);
+			brush.lineTo(bx2, by2);
+			brush.lineTo(bx2 + ((bx2 - lx) / fb) * far, by2 + ((by2 - ly) / fb) * far);
+			brush.lineTo(ax + ((ax - lx) / fa) * far, ay + ((ay - ly) / fa) * far);
+			brush.closePath();
+			brush.fill();
 		}
 	}
-	for (let r = 0; r <= 4; r++) {
-		const y = Math.round((r / 4) * h) + 0.5;
-		pen.moveTo(0, y);
-		pen.lineTo(w, y);
-	}
-	pen.stroke();
+	brush.fillStyle = "#141414";
+	for (const [bx, by, bw, bh] of P_BLOCKS) brush.fillRect(ox + bx * s, oy + by * s, bw * s, bh * s);
+	// The source itself.
+	brush.fillStyle = "#f2f2f0";
+	brush.beginPath();
+	brush.arc(lx, ly, 5, 0, Math.PI * 2);
+	brush.fill();
+	brush.strokeStyle = "#141414";
+	brush.lineWidth = 1;
+	brush.stroke();
+	brush.restore();
+}
 
-	if (analyser && awake()) {
-		wave ??= new Uint8Array(analyser.fftSize);
-		analyser.getByteTimeDomainData(wave);
+// Crossing a sphere tears the picture: strips of it shifted sideways for a moment.
+function tear(W, H, dpr) {
+	for (let n = 0; n < 7; n++) {
+		const y = rand(0, H);
+		const h = rand(2, 40);
+		const dx = rand(-60, 60);
+		brush.setTransform(1, 0, 0, 1, 0, 0);
+		brush.drawImage(sky, 0, y * dpr, W * dpr, h * dpr, dx * dpr, y * dpr, W * dpr, h * dpr);
 	}
-	pen.strokeStyle = "rgba(242,242,240,0.9)";
-	pen.lineWidth = 1.5;
-	pen.shadowColor = "rgba(242,242,240,0.6)";
-	pen.shadowBlur = 8;
-	pen.beginPath();
-	const n = 512;
-	for (let k = 0; k < n; k++) {
-		const x = (k / (n - 1)) * w;
-		let v;
-		if (wave && awake()) v = (wave[Math.floor((k / n) * wave.length)] - 128) / 128;
-		else v = Math.sin(k * 0.05 + now / 900) * 0.18 * Math.sin(now / 2300);
-		// Now and then the line tears.
-		if (Math.random() < 0.002) v += (Math.random() - 0.5) * 1.2;
-		const y = h / 2 - v * h * 0.42;
-		k ? pen.lineTo(x, y) : pen.moveTo(x, y);
-	}
-	pen.stroke();
-	pen.shadowBlur = 0;
-	hz.textContent = awake() ? "D · A · drone · 73.42 Hz" : "Silent · click to hear";
-	requestAnimationFrame(draw);
+	brush.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
 // ---------------------------------------------------------------- the grid, to the ink
@@ -415,8 +583,8 @@ function driftWorks(vh) {
 
 // The tear. Five copies of a name, solid and outline mixed, each shown as a slice of random height
 // thrown sideways; now and then one leaps far or is stretched. Bars cross the band and invert what
-// they cover, and the name itself jolts or drops out for a frame. Every frame is drawn at random, in
-// bursts of irregular length with pauses between, so it never repeats as a loop would.
+// they cover, and the name itself jolts or drops out for a frame. Every frame is drawn at random, so
+// it never repeats as a loop would. A burst comes when a fragment sounds, and only then.
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = (p) => Math.random() < p;
 function glitcher(w) {
@@ -437,7 +605,6 @@ function glitcher(w) {
 		return bar;
 	});
 	let timer = 0;
-	let hover = false;
 
 	function shake(force) {
 		const width = base.getBoundingClientRect().width;
@@ -482,8 +649,6 @@ function glitcher(w) {
 		const step = () => {
 			if (performance.now() > end) {
 				calm();
-				// While pointed at, it goes on: another burst after a pause, never the same twice.
-				if (hover) timer = setTimeout(() => burst(rand(80, 520), rand(0.45, 1)), rand(40, 600));
 				return;
 			}
 			shake(force);
@@ -491,22 +656,8 @@ function glitcher(w) {
 		};
 		step();
 	}
-	w.el.addEventListener("pointerenter", (e) => {
-		if (e.pointerType !== "mouse") return;
-		hover = true;
-		burst(700, 1);
-	});
-	w.el.addEventListener("pointerleave", () => {
-		hover = false;
-		burst(180, 0.7);
-	});
-	// Unprompted, now and then, while the band is in view.
-	const idle = () => {
-		const top = w.top - scrollY;
-		if (!hover && !document.hidden && top < innerHeight && top + w.h > 0) burst(rand(140, 420), rand(0.5, 0.9));
-		setTimeout(idle, rand(3500, 8000));
-	};
-	setTimeout(idle, rand(1500, 4000));
+	// It tears only when a fragment sounds (strike).
+	w.burst = burst;
 }
 if (!reduce) works.forEach(glitcher);
 
