@@ -55,7 +55,10 @@ b, em { font-style: normal; }
 .panel { position: relative; border-radius: var(--r); overflow: clip; padding: 0 var(--p); }
 .t-black { background: var(--black); color: var(--white); --line: rgb(255 255 255 / 0.12); --dim: rgb(242 242 240 / 0.5); }
 .t-dark { background: var(--char); color: var(--white); --line: rgb(255 255 255 / 0.12); --dim: rgb(242 242 240 / 0.5); }
-.t-paper { background: var(--paper); --line: rgb(0 0 0 / 0.14); --dim: rgb(20 20 20 / 0.55); }
+.t-paper { background: var(--paper); color: var(--ink); --line: rgb(0 0 0 / 0.14); --dim: rgb(20 20 20 / 0.55); }
+.t-mid { background: var(--mid); color: var(--ink); --line: rgb(0 0 0 / 0.2); --dim: rgb(20 20 20 / 0.62); }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
+button:hover { text-decoration: underline; text-underline-offset: 0.25em; }
 
 .mono { font: 500 10px/1.35 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
 .dim { color: var(--dim); }
@@ -105,10 +108,10 @@ b, em { font-style: normal; }
 	cursor: default;
 	user-select: none;
 }
-.name { display: inline-block; will-change: transform; }
+.name { display: inline-block; will-change: transform; pointer-events: none; }
 .name b { display: inline-block; font-weight: inherit; }
-.name .x { overflow: hidden; vertical-align: top; }
-.name .x.glitch { color: transparent; -webkit-text-stroke: 1px var(--white); }
+/* The vowels that come and go are only their outline. */
+.name .x { overflow: hidden; vertical-align: top; color: transparent; -webkit-text-stroke: 1px var(--white); }
 
 .bar { display: flex; align-items: center; gap: var(--g); padding: 18px 0 0; }
 .hatch {
@@ -241,13 +244,13 @@ b, em { font-style: normal; }
 }
 
 .vision > .row, .title, .body, .cite, .frags-head { position: relative; }
-.title { display: block; margin: clamp(48px, 7vw, 120px) 0 clamp(32px, 4vw, 64px); font-weight: 800; font-size: clamp(52px, 9.4vw, 176px); line-height: 0.82; letter-spacing: -0.05em; max-width: 75%; }
-.title span { display: block; }
-.title .or { font-weight: 250; font-stretch: 62%; letter-spacing: -0.03em; padding-left: 0.9em; }
+.title { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); margin: clamp(48px, 7vw, 120px) 0 clamp(32px, 4vw, 64px); font-weight: 800; font-size: clamp(52px, 9.4vw, 176px); line-height: 0.82; letter-spacing: -0.05em; }
+.title span { grid-column: 1 / span 10; }
+.title .or { grid-column: 2 / span 9; font-weight: 250; font-stretch: 62%; letter-spacing: -0.03em; }
 
 .body { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--g); }
-.veil { grid-column: 1 / span 8; font-weight: 500; font-size: clamp(20px, 2.2vw, 36px); line-height: 1.16; letter-spacing: -0.02em; }
-.veil p + p { margin-top: 0.9em; text-indent: 2.4em; }
+.veil { --vc: 8; grid-column: 1 / span 8; font-weight: 500; font-size: clamp(20px, 2.2vw, 36px); line-height: 1.16; letter-spacing: -0.02em; }
+.veil p + p { margin-top: 0.9em; text-indent: calc((100% - (var(--vc) - 1) * var(--g)) / var(--vc) + var(--g)); }
 .veil em { font-weight: 700; }
 .note { grid-column: 9 / span 2; align-self: start; display: grid; gap: 8px; padding-top: 0.6em; }
 .note .coarse { display: none; }
@@ -255,11 +258,12 @@ b, em { font-style: normal; }
 
 /* A word of the veil: the word itself keeps its place, signs stand over it until it is seen. */
 .w { position: relative; display: inline-block; text-indent: 0; }
-.w s { position: absolute; left: 0; top: 0; bottom: 0; right: -0.3em; overflow: hidden; text-decoration: none; white-space: pre; pointer-events: none; display: none; align-items: center; }
+.w s { position: absolute; left: 0; top: 0; bottom: 0; right: 0; overflow: hidden; text-decoration: none; white-space: pre; pointer-events: none; display: none; align-items: center; }
 .w.v { color: transparent; }
 .w.v s { display: flex; }
 .w s u { text-decoration: none; color: var(--ink); }
-.w s q { font: 400 0.62em/1 var(--mono); letter-spacing: 0.04em; color: var(--mid); }
+/* At this size a sign of the mono font is as wide as an average letter of the text. */
+.w s q { font: 400 0.86em/1 var(--mono); letter-spacing: 0; color: #8b8b88; font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
 .w s q::before, .w s q::after { content: none; }
 .w.k.v s q { color: var(--ink); }
 
@@ -313,15 +317,100 @@ b, em { font-style: normal; }
 .frags.lit li.on, .frags li.on { background: var(--char); color: var(--white); }
 .frags li:hover { background: var(--mid); transition-delay: 0s; }
 .frags li.on:hover { background: var(--black); }
+.frags { touch-action: pan-y; }
+.frags.eighteen { grid-template-columns: repeat(18, minmax(0, 1fr)); }
+.frags li { cursor: crosshair; user-select: none; }
+.frags li::after { content: attr(data-note); position: absolute; left: 8px; top: 28px; opacity: 0; font-size: 9px; }
+.frags li.hit { animation: hit 0.9s var(--ease); }
+.frags li.hit::after { animation: note 1.4s var(--ease); }
+.frags li.on.hit, .frags li.xviii.hit { animation-name: hit-dark; }
+.frags li.jit { animation: hit 0.9s var(--ease), jit 0.18s steps(3) 2; }
+@keyframes hit { from { background: var(--ink); color: var(--white); } }
+@keyframes hit-dark { from { background: var(--white); color: var(--ink); } }
+@keyframes note { 0%, 60% { opacity: 1; } }
+@keyframes jit { 33% { transform: translateX(3px); } 66% { transform: translateX(-2px); } }
+.frags li.xviii { background: var(--black) !important; color: var(--white); cursor: pointer; animation: born 1.2s var(--ease); }
+@keyframes born { from { clip-path: inset(100% 0 0 0); } }
+.snd { justify-self: start; }
 .frags li span { position: absolute; left: 50%; bottom: 10px; writing-mode: vertical-rl; transform: translateX(-50%) rotate(180deg); text-transform: uppercase; font-weight: 600; font-size: 11px; letter-spacing: 0.14em; }
 
 @media (max-width: 899px) {
-	.title { max-width: none; }
-	.veil { grid-column: 1 / span 11; }
+	.title span { grid-column: 1 / -1; }
+	.title .or { grid-column: 2 / -1; }
+	.veil { --vc: 11; grid-column: 1 / span 11; }
 	.note { grid-column: 1 / -1; grid-row: 1; padding: 0 0 8px; }
 	.big span { color: var(--light); }
 	.frags li { padding: 8px 0 0 3px; font-size: 8px; letter-spacing: 0; writing-mode: vertical-rl; }
 	.frags li span { writing-mode: vertical-rl; font-size: 9px; }
+}
+
+/* ================================================================ XVIII */
+
+.secret[hidden] { display: none; }
+.secret {
+	min-height: calc(100svh - 2 * var(--m));
+	display: grid;
+	grid-template-rows: auto 1fr auto auto;
+	padding-top: 22px;
+	padding-bottom: 22px;
+	animation: unseal 1.4s var(--ease);
+}
+@keyframes unseal { from { clip-path: inset(0 0 100% 0 round var(--r)); } to { clip-path: inset(0 0 0 0 round var(--r)); } }
+.scope { display: block; align-self: center; width: calc(100% + 2 * var(--p)); height: clamp(200px, 38svh, 440px); margin: 22px calc(var(--p) * -1); }
+.unfold { font-weight: 900; font-stretch: 62%; font-size: clamp(56px, 12.5vw, 250px); line-height: 0.8; letter-spacing: -0.02em; margin-bottom: 22px; overflow-wrap: anywhere; }
+.unfold i { font-style: normal; color: rgb(242 242 240 / 0.3); }
+
+/* ================================================================ works
+   Each work is a band of the panel in three rows of the grid: its labels, its block name, which runs
+   past both edges of the panel and slides sideways as the page scrolls (pine one way, pinecone the
+   other), and the words about it. The name and the words never cross. */
+
+.works { padding-top: 22px; padding-bottom: 0; }
+.work {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	column-gap: var(--g);
+	row-gap: clamp(28px, 3.4vw, 56px);
+	align-items: end;
+	padding: 18px 0 var(--p);
+	border-top: 1px solid var(--line);
+	text-decoration: none !important;
+}
+.works > header + .work { margin-top: 22px; }
+.meta { display: contents; }
+.wm {
+	grid-column: 1 / -1;
+	grid-row: 2;
+	position: relative;
+	height: clamp(56px, 8.6vw, 150px);
+	margin: 0 calc(var(--p) * -1);
+	padding-left: var(--p);
+	overflow: hidden;
+	pointer-events: none;
+}
+.wm svg { position: absolute; left: var(--p); top: 0; height: 100%; width: auto; color: var(--white); transform: translate3d(var(--x, 0px), 0, 0); will-change: transform; overflow: visible; }
+.wm svg:first-child { position: relative; left: 0; display: block; }
+/* The outline: its width is set from the size it is drawn at (main.js), so it stays a hairline. */
+.hollow .wm svg:first-child, .wm .echo.line { color: transparent; stroke: var(--white); stroke-width: var(--sw, 4); }
+.wm .echo.solid { color: var(--white); stroke: none; }
+
+/* The tear (main.js): copies of the name cut into slices and thrown sideways, and bars that invert
+   what they cross. Each frame is made at random, in bursts. */
+.wm .echo { opacity: 0; pointer-events: none; }
+.wm .bar { position: absolute; display: block; height: 2px; background: var(--white); mix-blend-mode: difference; opacity: 0; pointer-events: none; }
+
+.meta .n { grid-column: 1 / span 2; grid-row: 1; }
+.meta .go { grid-column: 9 / -1; grid-row: 1; text-align: right; }
+.meta .txt { grid-column: 9 / -1; grid-row: 3; display: grid; gap: 8px; }
+.hollow .meta .txt { grid-column: 1 / span 4; }
+.txt b { display: block; font-weight: 800; font-size: clamp(30px, 2.8vw, 48px); line-height: 0.95; letter-spacing: -0.04em; }
+.txt span { font-size: 16px; max-width: 30ch; color: var(--dim); }
+.work:hover .go { text-decoration: underline; text-underline-offset: 0.25em; }
+
+@media (max-width: 899px) {
+	.wm { height: clamp(48px, 15vw, 110px); }
+	.meta .txt, .hollow .meta .txt { grid-column: 1 / -1; }
+	.meta .go { grid-column: 5 / -1; }
 }
 
 /* ================================================================ the end */

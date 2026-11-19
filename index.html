@@ -51,7 +51,7 @@
 
 		<div class="intro">
 			<p class="mono dim">PMNDRE · Lib. II</p>
-			<h2>Poimandre</h2>
+			<h2 data-ink>Poimandre</h2>
 			<p class="sub">Open source developer collective</p>
 			<ul class="rows">
 				<li><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M8 12h8M12 8v8"/></svg><span><em>Fragmentary writings, put forth as one</em><b>17</b></span><i>01</i></li>
@@ -79,7 +79,7 @@
 		<span class="mid">The Divine Pymander</span>
 	</header>
 
-	<h2 class="title"><span>Poimandre,</span> <span class="or">or The Vision</span></h2>
+	<h2 class="title"><span data-ink>Poimandre,</span> <span class="or" data-ink>or The Vision</span></h2>
 
 	<div class="body">
 		<div class="veil" data-veil>
@@ -97,10 +97,50 @@
 	<div class="lens" aria-hidden="true"><i></i><span class="mono"></span></div>
 	<div class="scan" aria-hidden="true"><span class="mono">Visio</span><span class="mono pct"></span></div>
 
-	<div class="row mono frags-head"><span>XVII</span><span class="mid">Fragmentary writings, gathered together</span></div>
+	<div class="row mono frags-head"><span>XVII · Fragments</span><button class="mid snd mono" type="button" data-sound>♪ Press the fragments, or hold and pass over them</button></div>
 	<ol class="frags" aria-hidden="true">
 		<li>I</li><li class="on"><b>II</b><span>Poimandre</span></li><li>III</li><li>IV</li><li>V</li><li>VI</li><li>VII</li><li>VIII</li><li>IX</li><li>X</li><li>XI</li><li>XII</li><li>XIII</li><li>XIV</li><li>XV</li><li>XVI</li><li>XVII</li>
 	</ol>
+</section>
+
+<!-- ============================================================ XVIII, hidden until the melody is played -->
+<section class="panel t-black secret" id="xviii" hidden aria-label="The eighteenth fragment">
+	<header class="row mono">
+		<span>XVIII</span>
+		<span class="mid">The fragment that was not gathered</span>
+		<button class="r mono" type="button" data-close>Close ×</button>
+	</header>
+	<canvas class="scope" aria-hidden="true"></canvas>
+	<p class="unfold" data-unfold data-ink>the secrets of the invisible</p>
+	<div class="row mono">
+		<span class="dim">as they had been unfolded to him</span>
+		<span class="mid dim" data-hz></span>
+	</div>
+</section>
+
+<!-- ============================================================ works -->
+<section class="panel t-black works" id="works">
+	<header class="row mono">
+		<span>Works</span>
+		<span class="mid">Open source</span>
+		<span class="r">02</span>
+	</header>
+	<a class="work" href="https://pine.pmnd.re" data-dir="1">
+		<span class="wm" aria-hidden="true"><svg viewBox="0 0 3480 800"><use href="#pine"/></svg></span>
+		<span class="meta">
+			<span class="mono n">01</span>
+			<span class="mono go">pine.pmnd.re ↗</span>
+			<span class="txt"><b data-ink>pine</b><span>A reactive event harness for LLMs</span></span>
+		</span>
+	</a>
+	<a class="work hollow" href="https://github.com/pmndre/pinecone" data-dir="-1">
+		<span class="wm" aria-hidden="true"><svg viewBox="0 0 7800 800"><use href="#pinecone"/></svg></span>
+		<span class="meta">
+			<span class="mono n">02</span>
+			<span class="mono go">github.com/pmndre/pinecone ↗</span>
+			<span class="txt"><b data-ink>pinecone</b><span>Run more local AI than fits into your Mac's memory at once</span></span>
+		</span>
+	</a>
 </section>
 
 <!-- ============================================================ the end -->
@@ -108,7 +148,7 @@
 	<div class="ends">
 		<svg class="logo" viewBox="0 0 800 800" aria-hidden="true"><use href="#p"/></svg>
 		<div class="who">
-			<p class="wordmark">PMNDRE</p>
+			<p class="wordmark" data-ink>PMNDRE</p>
 			<p class="dim">Open source developer collective</p>
 		</div>
 		<ul class="links mono">
@@ -116,11 +156,13 @@
 			<li><a href="https://pine.pmnd.re">pine.pmnd.re ↗</a></li>
 		</ul>
 	</div>
-	<div class="ticker mono" aria-hidden="true"><div><span>Poimandre · or The Vision · PMNDRE · the secrets of the invisible · </span><span>Poimandre · or The Vision · PMNDRE · the secrets of the invisible · </span></div></div>
+	<div class="ticker mono" aria-hidden="true"><div><span>Poimandre · or The Vision · PMNDRE · the secrets of the invisible · VIII IX X IX VIII VII VIII · </span><span>Poimandre · or The Vision · PMNDRE · the secrets of the invisible · VIII IX X IX VIII VII VIII · </span></div></div>
 </footer>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 	<symbol id="p" viewBox="0 0 800 800"><path fill="currentColor" d="M280 560h240v240H280zM280 280h240v240H280zM0 280h240v240H0zM560 0H280v240h280v280h240V0z"/></symbol>
+	<symbol id="pine" viewBox="0 0 3480 800"><path fill="currentColor" d="M280 560h240v240H280zM280 280h240v240H280zM0 280h240v240H0zM560 0H280v240h280v280h240V0zM1080 0h240v240h-240zM1080 280h240v240h-240zM1080 560h240v240h-240zM1600 0h240v240h-240zM1600 280h240v240h-240zM1600 560h240v240h-240zM2160 560h240v240h-240zM1880 0h240v240h-240zM2120 0h40v240h-40zM2160 0h240v240h-240zM2160 240h240v40h-240zM2160 280h240v240h-240zM3240 0h240v240h-240zM2960 280h240v240h-240zM2680 560h240v240h-240zM2960 560h240v240h-240zM3240 560h240v240h-240zM2680 0h240v240h-240zM2920 0h40v240h-40zM2680 240h240v40h-240zM2960 0h240v240h-240zM2680 280h240v240h-240z"/></symbol>
+	<symbol id="pinecone" viewBox="0 0 7800 800"><path fill="currentColor" d="M280 560h240v240h-240zM280 280h240v240h-240zM0 280h240v240h-240zM1080 0h240v240h-240zM1080 280h240v240h-240zM1080 560h240v240h-240zM1600 0h240v240h-240zM1600 280h240v240h-240zM1600 560h240v240h-240zM1880 0h240v240h-240zM2160 0h240v240h-240zM2160 280h240v240h-240zM2160 560h240v240h-240zM2120 0h40v240h-40zM2160 240h240v40h-240zM2680 0h240v240h-240zM2960 0h240v240h-240zM3240 0h240v240h-240zM2680 280h240v240h-240zM2960 280h240v240h-240zM2680 560h240v240h-240zM2960 560h240v240h-240zM3240 560h240v240h-240zM2920 0h40v240h-40zM2680 240h240v40h-240zM3760 0h240v240h-240zM4040 0h240v240h-240zM4320 0h240v240h-240zM3760 280h240v240h-240zM3760 560h240v240h-240zM4040 560h240v240h-240zM4320 560h240v240h-240zM4000 0h40v240h-40zM3760 240h240v40h-240zM4840 0h240v240h-240zM5120 0h240v240h-240zM5400 0h240v240h-240zM4840 280h240v240h-240zM5400 280h240v240h-240zM4840 560h240v240h-240zM5120 560h240v240h-240zM5400 560h240v240h-240zM5360 0h40v240h-40zM5400 240h240v40h-240zM5920 0h240v240h-240zM5920 280h240v240h-240zM5920 560h240v240h-240zM6200 0h240v240h-240zM6480 0h240v240h-240zM6480 280h240v240h-240zM6480 560h240v240h-240zM6440 0h40v240h-40zM6480 240h240v40h-240zM7000 0h240v240h-240zM7280 0h240v240h-240zM7560 0h240v240h-240zM7000 280h240v240h-240zM7280 280h240v240h-240zM7000 560h240v240h-240zM7280 560h240v240h-240zM7560 560h240v240h-240zM7240 0h40v240h-40zM7000 240h240v40h-240zM560 0H280V240H560V520H800V0H560Z"/></symbol>
 </svg>
 </body>
 </html>
