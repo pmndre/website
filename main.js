@@ -1,7 +1,7 @@
 // What moves on the page. Nothing here is needed to read it: without this file (or with reduced
 // motion asked for) the name reads PMNDRE, the P stands whole and the text is plain.
 
-import { wake, tone, awake, isMuted, setMuted, drone, sphere, light as dawn, silence, crash, NAMES } from "./sound.js?v=4";
+import { wake, tone, awake, isMuted, setMuted, drone, sphere, light as dawn, silence, crash, NAMES } from "./sound.js?v=5";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (s, r = document) => r.querySelector(s);
@@ -320,7 +320,6 @@ function ascend() {
 		requestAnimationFrame(fade);
 	}
 	requestAnimationFrame(sky_);
-	$("[data-descend]", ascent).focus({ preventScroll: true });
 }
 
 function descend() {
@@ -360,7 +359,7 @@ function reach(zone) {
 	dawn(zone >= 8);
 	if (up && zone > 0) tearUntil = performance.now() + 380;
 	ascent.classList.toggle("lit", zone >= 8);
-	if (zone <= 0) say("", "Scroll to rise", "Seven spheres above");
+	if (zone <= 0) say("", "", "");
 	else if (zone <= 7) say(`Zone ${ROMAN[zone - 1]} of VII · given back · ${NAMES[zone - 1 + 7]}`, SPHERES[zone - 1], `Zone ${ROMAN[zone - 1]}`);
 	else say("", "", "The Eighth");
 }
