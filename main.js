@@ -1,7 +1,7 @@
 // What moves on the page. Nothing here is needed to read it: without this file (or with reduced
 // motion asked for) the name reads PMNDRE, the P stands whole and the text is plain.
 
-import { wake, tone, awake, isMuted, setMuted, light as dawn, silence, crash, NAMES } from "./sound.js?v=9";
+import { wake, tone, awake, isMuted, setMuted, light as dawn, silence, crash, NAMES } from "./sound.js?v=10";
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (s, r = document) => r.querySelector(s);

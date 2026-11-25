@@ -135,12 +135,12 @@ export function tone(i) {
 
 	let head = filter;
 	const roll = Math.random();
-	if (roll < 0.14) {
+	if (roll < 0.3) {
 		// It loses its bits.
 		const crush = ctx.createWaveShaper();
 		crush.curve = crushCurve;
 		head = filter.connect(crush);
-	} else if (roll < 0.28) {
+	} else if (roll < 0.6) {
 		// It stutters: cut three times, the last cut longest.
 		const gate = ctx.createGain();
 		for (let k = 0; k < 3; k++) {
@@ -148,7 +148,7 @@ export function tone(i) {
 			gate.gain.setValueAtTime(1, t + 0.08 + k * 0.07 + k * 0.01);
 		}
 		head = filter.connect(gate);
-	} else if (roll < 0.4) {
+	} else if (roll < 0.9) {
 		// It jumps an octave for a moment.
 		for (const o of [sq, saw]) {
 			o.frequency.setValueAtTime(o.frequency.value * 2, t);
