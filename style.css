@@ -193,6 +193,8 @@ button:hover { text-decoration: underline; text-underline-offset: 0.25em; }
 .rows span { display: grid; gap: 4px; }
 .rows em { font: 500 10px/1.3 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
 .rows b { font-weight: 700; font-size: 34px; line-height: 1; letter-spacing: -0.03em; }
+/* A date that was, struck through and dim before the one that is. */
+.rows b s { display: block; margin-bottom: 4px; color: var(--dim); text-decoration-thickness: 2px; }
 .rows i { font: 500 10px var(--mono); color: var(--dim); align-self: start; font-style: normal; }
 
 .foot { padding-bottom: 22px; display: grid; gap: 14px; }
